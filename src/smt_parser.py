@@ -1,14 +1,14 @@
 from rply import ParserGenerator
-from smt_ast import Expr, Value, BinOp, Function, Args
+from smt_ast import Value, BinOp, UOp, Function, Args, Cond
 
 class Parser():
     def __init__(self):
         self.tks = ['FUN', 'NUM', 'VAR']
-        self.prs = ['LPAREN', 'RPAREN']
+        self.prs = ['LP', 'RP']
         self.ops = ['ADD', 'SUB', 'MUL', 'DIV', 
                     'AND', 'OR', 
-                    'EQ', 'LEQ', 'GEQ']
-                    #'NOT', 'ITE', 'NEG']
+                    'EQ', 'LEQ', 'GEQ',
+                    'NOT', 'ITE']
         self.tys = ['INT', 'BOOL']
         
         self.pg = ParserGenerator(
@@ -16,15 +16,15 @@ class Parser():
         )
 
     def parse(self):
-        @self.pg.production('''function :   LPAREN 
-                                                FUN VAR LPAREN args RPAREN type expr 
-                                            RPAREN 
+        @self.pg.production('''function :   LP 
+                                                FUN VAR LP args RP type expr 
+                                            RP 
                                             function''')
         @self.pg.production('''function : ''')
         def function(tks):
             return Function(tks)
 
-        @self.pg.production('args : LPAREN VAR type RPAREN args')
+        @self.pg.production('args : LP VAR type RP args')
         @self.pg.production('args : ')
         def args(tks):
             return Args(tks)
@@ -34,23 +34,26 @@ class Parser():
         def type(tks):
             return Value(tks[0].value)
 
-        @self.pg.production('expr : LPAREN expr RPAREN')
-        def expr(tks):
-            return Expr(tks[1])
-
-        @self.pg.production('expr : ADD expr expr')
-        @self.pg.production('expr : SUB expr expr')
-        @self.pg.production('expr : MUL expr expr')
-        @self.pg.production('expr : DIV expr expr')
-        @self.pg.production('expr : AND expr expr')
-        @self.pg.production('expr : OR expr expr')
-        @self.pg.production('expr : EQ expr expr')
-        @self.pg.production('expr : LEQ expr expr')
-        @self.pg.production('expr : GEQ expr expr')
+        @self.pg.production('expr : LP ADD expr expr RP')
+        @self.pg.production('expr : LP SUB expr expr RP')
+        @self.pg.production('expr : LP MUL expr expr RP')
+        @self.pg.production('expr : LP DIV expr expr RP')
+        @self.pg.production('expr : LP AND expr expr RP')
+        @self.pg.production('expr : LP OR  expr expr RP')
+        @self.pg.production('expr : LP EQ  expr expr RP')
+        @self.pg.production('expr : LP LEQ expr expr RP')
+        @self.pg.production('expr : LP GEQ expr expr RP')
         def binop(tks):
-            for t in tks:
-                print(t)
-            return BinOp(tks[0], tks[1], tks[2])
+            return BinOp(tks[1], tks[2], tks[3])
+
+        @self.pg.production('expr : LP SUB expr RP')
+        @self.pg.production('expr : LP NOT expr RP')
+        def uop(tks):
+            return UOp(tks[1], tks[2])
+
+        @self.pg.production('expr : LP ITE expr expr expr RP')
+        def conditional(tks):
+            return Cond(tks[2], tks[3], tks[4])
 
         @self.pg.production('expr : NUM')
         @self.pg.production('expr : VAR')
