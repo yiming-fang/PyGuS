@@ -1,2 +1,2 @@
 def inv_f(x: int) -> bool:
-	(not (x >= 11))
+	return (not (x >= 11))

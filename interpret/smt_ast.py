@@ -15,7 +15,7 @@ class Function():
             return ""
         fun_string = "def " + self.name + "(" + self.args.eval() + ")" +\
             " -> " + self.typ.eval() + ":\n\t" +\
-            self.body.eval()
+            "return " + self.body.eval()
         next_fun = self.next_funs.eval()
         return fun_string + "\n" + next_fun
 
