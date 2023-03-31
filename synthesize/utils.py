@@ -1,5 +1,4 @@
-import cvc5
-from cvc5 import Kind
+from cvc5 import Solver, Kind
 
 
 def define_fun_to_string(f, params, body):
@@ -25,6 +24,15 @@ def synth_solutions(terms, sols):
             body = sols[i][1]
         result += define_fun_to_string(terms[i], params, body) + "\n"
     return result
+
+
+def setup_solver():
+    slv = Solver()
+    slv.setOption("sygus", "true")
+    slv.setOption("incremental", "false")
+    slv.setLogic("LIA")
+    return slv
+
 
 def dump_smt(path, prog):
     f = open(path, "w+")

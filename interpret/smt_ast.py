@@ -4,7 +4,7 @@ class Function():
             self.empty = False
             self.name = tks[2].value
             self.args = tks[4]
-            self.typ  = tks[6]
+            self.typ = tks[6]
             self.body = tks[7]
             self.next_funs = tks[9]
         else:
@@ -13,9 +13,9 @@ class Function():
     def eval(self):
         if self.empty:
             return ""
-        fun_string =  "def " + self.name + "(" + self.args.eval() + ")" +\
-                      " -> " + self.typ.eval() + ":\n\t" +\
-                      self.body.eval()
+        fun_string = "def " + self.name + "(" + self.args.eval() + ")" +\
+            " -> " + self.typ.eval() + ":\n\t" +\
+            self.body.eval()
         next_fun = self.next_funs.eval()
         return fun_string + "\n" + next_fun
 
@@ -29,11 +29,11 @@ class Args():
             self.args = tks[4]
         else:
             self.empty = True
-        
+
     def eval(self):
         if self.empty:
             return ""
-        arg_string = self.var + ": " + self.typ.eval() 
+        arg_string = self.var + ": " + self.typ.eval()
         next_args = self.args.eval()
         if len(next_args):
             return arg_string + ", " + next_args
@@ -77,7 +77,7 @@ class UOp(Expr):
     def __init__(self, operator, oprand):
         self.operand = oprand
         self.operator = operator.value
-        
+
     def eval(self):
         self.str = str(self.operator) + " " + self.operand.eval()
         return parens(self.str)
@@ -91,6 +91,6 @@ class Cond(Expr):
 
     def eval(self):
         self.str = self.then_clause.eval() + " if " +\
-                   self.if_clause.eval() + " else " +\
-                   self.else_clause.eval()
+            self.if_clause.eval() + " else " +\
+            self.else_clause.eval()
         return parens(self.str)
