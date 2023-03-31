@@ -15,6 +15,6 @@ def interpret_smt(smt_prog: str) -> str:
 
 
 def dump_python(path, prog):
-    f = open(path, "a")
+    f = open(path, "w+")
     f.write(prog)
     f.close()
